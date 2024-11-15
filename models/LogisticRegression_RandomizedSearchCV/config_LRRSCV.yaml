@@ -1,0 +1,30 @@
+configuracion_busqueda:
+  cv: 5
+  n_iter: 50
+  random_state: 42
+  scoring: accuracy
+mejor_puntuacion: !!python/object/apply:numpy._core.multiarray.scalar
+- &id001 !!python/object/apply:numpy.dtype
+  args:
+  - f8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  9Qw1FqRK6T8=
+mejores_parametros:
+  C: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id001
+  - !!binary |
+    o7Wpz3kMgUA=
+  penalty: l1
+  solver: liblinear
+modelo: LogisticRegression

@@ -6,7 +6,7 @@ import re
 
 def load_model():
 
-    with open('../models/DecissionTree_RandomSearchCV/model_DTCRSCV.pkl', 'rb') as file:
+    with open('../models/DecisionTree_RandomizedSearchCV/model_DTCRSCV.pkl', 'rb') as file:
         model = pickle.load(file)
     return model
 

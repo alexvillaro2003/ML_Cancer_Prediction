@@ -1,0 +1,50 @@
+configuracion_busqueda:
+  cv: 5
+  n_iter: 50
+  random_state: 42
+  scoring: recall
+mejor_puntuacion: !!python/object/apply:numpy._core.multiarray.scalar
+- !!python/object/apply:numpy.dtype
+  args:
+  - f8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  u4+JP8cj6j8=
+mejores_parametros:
+  criterion: entropy
+  max_depth: !!python/object/apply:numpy._core.multiarray.scalar
+  - &id001 !!python/object/apply:numpy.dtype
+    args:
+    - i8
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - <
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - !!binary |
+    DwAAAAAAAAA=
+  min_samples_leaf: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id001
+  - !!binary |
+    BQAAAAAAAAA=
+  min_samples_split: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id001
+  - !!binary |
+    BwAAAAAAAAA=
+modelo: DecisionTreeClassifier
