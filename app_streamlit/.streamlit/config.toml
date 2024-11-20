@@ -1,0 +1,6 @@
+[theme]
+primaryColor = "#ff7f50"                # Coral para los botones y acentos
+backgroundColor = "#000000"             # Fondo completamente negro
+secondaryBackgroundColor = "#1a1a1a"   # Gris muy oscuro para las secciones secundarias
+textColor = "#ffffff"                   # Blanco para el texto
+font = "sans serif"

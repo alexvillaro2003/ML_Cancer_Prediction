@@ -19,31 +19,35 @@ with tabs[0]:
     genero = st.selectbox("Género", options=["Masculino", "Femenino"])
     genero = 0 if genero == "Masculino" else 1  # type: ignore
 
-
-    if "bmi" not in st.session_state:
-        st.session_state.bmi = 25.0 
-
     if "mostrar_calculo_bmi" not in st.session_state:
-        st.session_state.mostrar_calculo_bmi = False 
+        st.session_state.mostrar_calculo_bmi = False
 
+    if "bmi" not in st.session_state or not isinstance(st.session_state.bmi, float):
+        st.session_state.bmi = 25.0  # Valor predeterminado válido
 
-    bmi = st.slider("Índice de Masa Corporal (BMI)", min_value=15.0, max_value=40.0, value=st.session_state.bmi, step=0.1)
-
+    bmi = st.slider(
+        "Índice de Masa Corporal (BMI)",
+        min_value=15.0,
+        max_value=40.0,
+        value=float(st.session_state.bmi) if isinstance(st.session_state.bmi, float) else 25.0,
+        step=0.1
+    )
 
     if st.button("Calcular BMI", key="bmi_button"):
         st.session_state.mostrar_calculo_bmi = not st.session_state.mostrar_calculo_bmi
-
 
     if st.session_state.mostrar_calculo_bmi:
         st.write("Ingrese su altura y peso para calcular el BMI:")
         altura = st.number_input("Altura en metros", min_value=0.5, max_value=2.5, step=0.01, value=1.70, key="altura")
         peso = st.number_input("Peso en kilogramos", min_value=10.0, max_value=300.0, step=0.1, value=70.0, key="peso")
-        
 
         if altura > 0 and peso > 0:
             bmi_calculado = calculo_bmi(altura, peso)
-            st.session_state.bmi = bmi_calculado
-            st.write(f"Su BMI calculado es: **{bmi_calculado:.2f}**")
+            if isinstance(bmi_calculado, float):
+                st.session_state.bmi = bmi_calculado
+                st.write(f"Su BMI calculado es: **{bmi_calculado:.2f}**")
+            else:
+                st.warning("El cálculo del BMI no generó un valor válido.")
 
 
     fuma = st.radio("¿Fuma?", options=["No", "Sí"])
@@ -61,14 +65,41 @@ with tabs[0]:
     historial_cancer = 0 if historial_cancer == "No" else 1 # type: ignore
 
 
+    # Prediccion Manual
     if st.button("Predecir"):
         data = np.array([[edad, genero, st.session_state.bmi, fuma, riesgo_0, riesgo_1, riesgo_2, actividad_fisica, consumo_alcohol, historial_cancer]])
         pred = model.predict(data)
+        prob = model.predict_proba(data)
+
 
         if pred[0] == 1:
             st.error("El modelo predice que el paciente TIENE CÁNCER.")
+            st.write(f"**Probabilidad estimada:** {prob[0][1] * 100:.2f}%")
         else:
             st.success("El modelo predice que el paciente NO TIENE CÁNCER.")
+            st.write(f"**Probabilidad estimada:** {prob[0][0] * 100:.2f}%")
+
+        st.session_state.prediccion_realizada = True
+
+
+    # Botón para generar el PDF
+    if "prediccion_realizada" in st.session_state and st.session_state.prediccion_realizada:
+
+        data = np.array([[edad, genero, st.session_state.bmi, fuma, riesgo_0, riesgo_1, riesgo_2, actividad_fisica, consumo_alcohol, historial_cancer]])
+        pred = model.predict(data)
+        prob = model.predict_proba(data)
+
+        pdf_data = generar_expediente_pdf(edad, genero, st.session_state.bmi, fuma, 
+                                        riesgo_0, riesgo_1, riesgo_2, actividad_fisica, 
+                                        consumo_alcohol, historial_cancer, prob)
+
+        st.download_button(
+            label="Descargar Expediente",
+            data=open(pdf_data, "rb").read(),
+            file_name="expediente_medico.pdf",
+            mime="application/pdf",
+            key="download_button_manual"
+        )            
 
 
 
@@ -139,7 +170,8 @@ with tabs[1]:
             if bmi_search:
                 data['bmi'] = float(bmi_search.group(1))
 
-            data['st.session_state.bmi'] = False
+            else:
+                data['bmi'] = 25.0
 
             return data
 
@@ -150,14 +182,92 @@ with tabs[1]:
 
 
         if st.button("Predecir desde PDF"):
-            input_data = np.array([[data['age'], data['gender'], data['bmi'], data['smoking'], 
-                            data['riesgo_0'], data['riesgo_1'], data['riesgo_2'], 
-                            data['alcohol_intake'], data['cancer_history'], data['st.session_state.bmi']]])
+            input_data = np.array([[data['age'], data['gender'], data['bmi'], data['smoking'],2,
+                        data['alcohol_intake'], data['cancer_history'],
+                        data['riesgo_0'], data['riesgo_1'], data['riesgo_2']]])
+
 
             pred = model.predict(input_data)
+            prob = model.predict_proba(input_data)
 
             if pred[0] == 1:
                 st.error("El modelo predice que el paciente TIENE CÁNCER.")
+                st.write(f"**Probabilidad estimada:** {prob[0][1] * 100}%")
             else:
                 st.success("El modelo predice que el paciente NO TIENE CÁNCER.")
+                st.write(f"**Probabilidad estimada:** {prob[0][0] * 100}%")
 
+        
+        # Botón para generar el PDF
+        st.session_state.prediccion_realizada_2 = True
+
+
+        # Botón para generar el PDF
+        if "prediccion_realizada_2" in st.session_state and st.session_state.prediccion_realizada_2:
+
+            input_data = np.array([[data['age'], data['gender'], data['bmi'], data['smoking'],2,
+                        data['alcohol_intake'], data['cancer_history'],
+                        data['riesgo_0'], data['riesgo_1'], data['riesgo_2']]])
+
+            
+            pred = model.predict(input_data)
+            prob = model.predict_proba(input_data)
+                            
+
+            actividad_fisica = 2.0
+            st.session_state.bmi = False
+
+            pdf_data = generar_expediente_pdf(data['age'], data['gender'], data['bmi'], data['smoking'], 
+                                            data['riesgo_0'], data['riesgo_1'], data['riesgo_2'], actividad_fisica, 
+                                            data['alcohol_intake'], historial_cancer, prob)
+
+            st.download_button(
+                label="Descargar Expediente",
+                data=open(pdf_data, "rb").read(),
+                file_name="expediente_medico.pdf",
+                mime="application/pdf",
+                key="download_button_pdf"
+            )            
+
+
+
+# Pie de página
+st.markdown("---")
+
+st.markdown("### Información Adicional")
+
+# Desplegable 1: Modelo predictivo y métricas
+with st.expander("Modelo Predictivo y Métricas"):
+    st.write("""
+    Este modelo de predicción de cáncer está basado en un algoritmo de aprendizaje automático entrenado con datos médicos.
+    A continuación, se presentan las métricas clave del modelo:
+    """)
+    st.write("- **Precisión (Accuracy):** 0.936000")
+    st.write("- **Sensibilidad (Recall):** 0.894366")
+    st.write("- **Precisión (Precision):** 0.933824")
+    st.write("""
+    Estas métricas reflejan el rendimiento del modelo en un conjunto de datos de prueba.
+    """)
+
+# Desplegable 2: Descripción del modelo
+with st.expander("Descripción del Modelo"):
+    st.write("""
+    el modelo XGBoost entrenado con los parámetros ajustados muestra un buen desempeño 
+    general, con un alto recall, lo cual es clave para problemas en los que la identificación
+    precisa de las instancias positivas es crucial. Este modelo combina una alta precisión con
+    una buena capacidad de generalización, lo que lo hace adecuado para clasificación en conjuntos 
+    de datos desbalanceados y complejos.
+    """)
+    st.write("""
+    Este sistema no reemplaza una consulta médica, sino que es una herramienta complementaria para ayudar
+    en la evaluación de riesgos.
+    """)
+
+# Desplegable 3: Quiénes somos
+with st.expander("Quiénes Somos"):
+    st.write("""
+    © Alejandro Villarreal Rodríguez.
+    """)
+    st.write("""
+    Si tienes dudas o sugerencias, no dudes en contactarme.
+    """)

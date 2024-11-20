@@ -2,7 +2,7 @@ configuracion_busqueda:
   cv: 5
   n_iter: 50
   random_state: 42
-  scoring: accuracy
+  scoring: recall
 mejor_puntuacion: !!python/object/apply:numpy._core.multiarray.scalar
 - &id001 !!python/object/apply:numpy.dtype
   args:

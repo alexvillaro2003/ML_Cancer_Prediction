@@ -1,0 +1,49 @@
+configuracion_busqueda:
+  cv: 3
+  n_iter: 50
+  random_state: 42
+  scoring: recall
+mejor_puntuacion: !!python/object/apply:numpy._core.multiarray.scalar
+- !!python/object/apply:numpy.dtype
+  args:
+  - f8
+  - false
+  - true
+  state: !!python/tuple
+  - 3
+  - <
+  - null
+  - null
+  - null
+  - -1
+  - -1
+  - 0
+- !!binary |
+  m9vkU4j96z8=
+mejores_parametros:
+  colsample_bytree: 0.7
+  gamma: 0.3
+  learning_rate: 0.2
+  max_depth: !!python/object/apply:numpy._core.multiarray.scalar
+  - &id001 !!python/object/apply:numpy.dtype
+    args:
+    - i8
+    - false
+    - true
+    state: !!python/tuple
+    - 3
+    - <
+    - null
+    - null
+    - null
+    - -1
+    - -1
+    - 0
+  - !!binary |
+    AwAAAAAAAAA=
+  n_estimators: !!python/object/apply:numpy._core.multiarray.scalar
+  - *id001
+  - !!binary |
+    lgAAAAAAAAA=
+  subsample: 1.0
+modelo: XGBoost
